@@ -90,3 +90,4 @@ set message_text='end time must be after start time';
 end if;
 end //
 delimiter ;
+select * from workouts;
