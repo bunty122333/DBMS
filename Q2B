@@ -1,0 +1,92 @@
+select distinct u.name
+from users u, users_goal g, workouts w
+where u.user_id=g.user_id
+and g.goal_type='improve endurance';
+select distinct u.name
+from users u, users_goal g, workouts w
+where u.user_id=g.user_id
+and u.user_id=w.user_id
+and g.goal_type='improve endurance';
+select distinct u.name
+from users u, users_goal g, workouts w
+where u.user_id=g.user_id
+and u.user_id=w.user_id
+and g.goal_type='improve endurance'
+and w.workout_type in ('running','cycling');
+select u.name,avg(s.step_count) as avg_steps
+from users u, steps s
+where u.user_id=s.user_id;
+select u.name,avg(s.step_count) as avg_steps
+from users u, steps s
+where u.user_id=s.user_id
+group by u.name;
+select count(*) as total_users
+from users;
+select *
+from workouts
+where date='2026-03-01';
+create view recent_workout as
+select u.name,max(w.date) 
+from users u, workouts w
+where u.user_id=w.user_id;
+create view recent_workout as
+select u.name,max(w.date) as recent_workout_date
+from users u, workouts w
+where u.user_id=w.user_id;
+create view recent_workout as
+select u.name,max(w.date) as recent_workout_date
+from users u, workouts w
+where u.user_id=w.user_id
+group by u.name;
+select * from recent_workout;
+select u.name,count(w.workout_id) as total_workouts
+from users u, workouts w
+where u.user_id=w.user_id
+group by u.name;
+select u.name,count(w.workout_id) as total_workouts
+from users u, workouts w
+where u.user_id=w.user_id
+group by u.name
+having count(w.workout_id)>3;
+delimiter //
+create trigger valid_workout_time
+before insert on workouts
+for each row
+begin
+if new.end_time<=new.start_time 
+set message_text='end time must be after start time';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger valid_workout_time
+before insert on workouts
+for each row
+begin
+if new.end_time<=new.start_time then
+set message_text='end time must be after start time';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger valid_workout_time
+before insert on workouts
+for each row
+begin
+if new.end_time<=new.start_time then
+signal '45000'
+set message_text='end time must be after start time';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger valid_workout_time
+before insert on workouts
+for each row
+begin
+if new.end_time<=new.start_time then
+signal sqlstate '45000'
+set message_text='end time must be after start time';
+end if;
+end //
+delimiter ;
