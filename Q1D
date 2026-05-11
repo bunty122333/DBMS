@@ -1,0 +1,98 @@
+select s.name,c.class_name
+from students s, classes c
+where s.class_id=c.class_id;
+select subject_id,max_marks as highest_marks
+from grades
+group by subject_id;
+select subject_id,max(marks) as highest_marks
+from grades
+group by subject_id;
+delimiter //
+create trigger stop_negative_marks
+before insert on grades
+for each row
+begin
+if new.marks<0 then
+signal '45000'
+set message='negative marks not allowed';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger stop_negative_marks
+before insert on grades
+for each row
+begin
+if new.marks<0 then
+signal '45000'
+set message_text='negative marks not allowed';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger stop_negative_marks
+before insert on grades
+for each row
+begin
+if new.marks<0 then
+signal sqlstate '45000'
+set message_text='negative marks not allowed';
+end if;
+end //
+delimiter ;
+select * from grades;
+delimiter //
+create procedure total_students
+begin
+select count(*) as total_students
+from students
+where class_id=c_id;
+end //
+delimiter ;
+delimiter //
+create procedure total_students(in cid int)
+begin
+select count(*) as total_students
+from students
+where class_id=c_id;
+end //
+delimiter ;
+delimiter //
+create procedure total_students(in cid int)
+begin
+select count(*) as total_students
+from students
+where class_id=cid;
+end //
+delimiter ;
+call total_students(1);
+select s.name,sum(g.marks) as total_marks
+from students s
+where s.student_id=g.student_id
+group by s.name
+having g.marks>80;
+select s.name,sum(g.marks) as total_marks
+from students s, grades g
+where s.student_id=g.student_id
+group by s.name
+having g.marks>80;
+select s.name,sum(g.marks) as total_marks
+from students s, grades g
+where s.student_id=g.student_id
+group by s.name
+having sum(g.marks)>80;
+select *
+from students
+where name like '%sh%';
+select subject_id,avg(marks) as avg_marks
+from grades
+group by subject_id
+having avg(marks)from grades);
+select subject_id,avg(marks) as avg_marks
+from grades
+group by subject_id
+having avg(marks)>(select avgmarks from grades);
+select subject_id,avg(marks) as avg_marks
+from grades
+group by subject_id
+having avg(marks)>(select avg(marks) from grades);
