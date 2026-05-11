@@ -1,0 +1,85 @@
+create view attendance_summary as
+select s.student_id,
+sum(status='present') as present_days,
+sum(status='absent') as absent_days,
+sum(status='late') as late_days
+from students s
+where s.student_id=a.student_id
+group by s.student_id,s.name;
+create view attendance_summary as
+select s.student_id,s.name,
+sum(status='present') as present_days,
+sum(status='absent') as absent_days,
+sum(status='late') as late_days
+from students s
+where s.student_id=a.student_id
+group by s.student_id,s.name;
+create view attendance_summary as
+select s.student_id,s.name,
+sum(status='present') as present_days,
+sum(status='absent') as absent_days,
+sum(status='late') as late_days
+from students s, attendance a
+where s.student_id=a.student_id
+group by s.student_id,s.name;
+select * from attendance_summary;
+select class_id,count(*) as total_students
+from students
+group by class_id;
+select student_id,name
+from students
+where name like 'd%';
+delimiter //
+create trigger class_change
+for each row
+begin
+insert into student_class_history
+values(old.name,old.class_id,new.class_id,now());
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger class_change
+before update on students
+for each row
+begin
+insert into student_class_history
+values(old.name,old.class_id,new.class_id,now());
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger class_change
+before update on students
+for each row
+begin
+if old.class_id<>new.class_id
+insert into student_class_history
+values(old.name,old.class_id,new.class_id,now());
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger class_change
+before update on students
+for each row
+begin
+if old.class_id<>new.class_id then
+insert into student_class_history
+values(old.name,old.class_id,new.class_id,now());
+end if;
+end //
+delimiter ;
+select * from student_class_history;
+select marks
+from grades
+where exam_name='midterm'
+order by marks desc;
+select marks
+from grades
+where exam_name='midterm'
+order by marks desc
+limit 3;
+select *
+from students
+order by name asc;
