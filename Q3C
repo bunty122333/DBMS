@@ -1,0 +1,72 @@
+select item_name,price
+from menu
+where price=(select max(price) from menu)
+or price=(select min(price) from menu);
+select category,count(*) as total_items
+from menu
+group by category;
+select avg(total_items) as avg_items_per_order
+from
+(select order_id as total_items
+from orderitems
+group by order_id);
+select avg(total_items) as avg_items_per_order
+from
+(select order_id,sum(quantity) as total_items
+from orderitems
+group by order_id);
+select avg(total_items) as avg_items_per_order
+from
+(select order_id,sum(quantity) as total_items
+from orderitems
+group by order_id) as x;
+select m.item_name
+from menu m, orderitems oi
+where m.item_id=oi.item_id
+and oi.order_id=1;
+select c.name,count(*) as total_orders
+from customers c, orders o
+where c.customer_id=o.customer_id
+group by c.name
+having count(*)>3;
+select c.name,count(o.order_id) as total_orders
+from customers c, orders o
+where c.customer_id=o.customer_id
+group by c.name
+having count(o.order_id)>3;
+select m.item_name,avg(oi.unit_price) as avg_price
+from menu m, orderitems oi
+where m.item_id=oi.item_id
+group by m.item_name
+having avg(oi.unit_price)>200;
+delimiter //
+create procedure additem(
+in iid int,
+in cat varchar(30),
+)
+begin
+insert into menu values(iid,iname,cat,pr);
+end //
+delimiter ;
+delimiter //
+create procedure additem(
+in iid int,
+in cat varchar(30),
+)
+begin
+insert into menu values(iid,iname,cat,pr);
+end //
+delimiter ;
+delimiter //
+create procedure additem(
+in iid int,
+in iname varchar(30),
+in cat varchar(30),
+in pr int
+)
+begin
+insert into menu values(iid,iname,cat,pr);
+end //
+delimiter ;
+call additem(6,'noodles','chinese',180);
+select * from menu;
