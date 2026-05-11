@@ -1,0 +1,78 @@
+select user_id,sum(step_count) as total_steps
+from steps
+group by user_id
+order by total_steps;
+select user_id,sum(step_count) as total_steps
+from steps
+group by user_id
+order by total_steps
+limit 1;
+select user_id,sum(step_count) as total_steps
+from steps
+group by user_id
+order by total_steps desc
+limit 1;
+select u.name
+from users u, goals g
+where u.goal_id=g.goal_id
+and g.goal='weight loss';
+select u.name
+from users u, goals g
+where u.goal_id=g.goal_id
+and g.goal_type='weight loss';
+select workout_type,avg(duration_in_minutes) as avg_duration
+from workouts
+group by workout_type;
+select *
+from workouts
+where duration_in_minutes>60;
+select *
+from users
+where registration_date>'2026-01-15';
+select workout_type,start_time,end_time
+from workouts
+and date='2026-03-01';
+select workout_type,start_time,end_time
+from workouts
+where user_id=1
+and date='2026-03-01';
+delimiter //
+create function totalsteps(uid int,d1 date,d2 date)
+returns int
+begin
+declare total int;
+select sum(step_count)
+from steps
+where user_id=uid
+and tracking_date between d1 and d2;
+return total;
+end //
+delimiter ;
+delimiter //
+create function totalsteps(uid int,d1 date,d2 date)
+returns int
+begin
+declare total int;
+select sum(step_count)
+into total
+from steps
+where user_id=uid
+and tracking_date between d1 and d2;
+return total;
+end //
+delimiter ;
+delimiter //
+create function totalsteps(uid int,d1 date,d2 date)
+returns int
+deterministic
+begin
+declare total int;
+select sum(step_count)
+into total
+from steps
+where user_id=uid
+and tracking_date between d1 and d2;
+return total;
+end //
+delimiter ;
+select totalsteps(1,'2026-03-01','2026-03-02');
