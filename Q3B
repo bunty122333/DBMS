@@ -1,0 +1,113 @@
+select item_id,quantity*unit_price as total_price
+from orderitems
+where order_id=1;
+select distinct c.name
+from customers c, orders o
+where c.customer_id=o.customer_id;
+select count(*) as total_customers
+from customers;
+select item_name
+from menu
+where item_id not in
+select item_id from orderitems;
+select item_name
+from menu
+where item_id not in
+(select item_id from orderitems);
+select c.name
+from customers c, orders o, orderitems oi, menu m
+where c.customer_id=o.customer_id
+m.category in ('pizza','burgers')
+having count(distinct m.category)=2;
+select c.name
+from customers c, orders o, orderitems oi, menu m
+where c.customer_id=o.customer_id
+m.category in ('pizza','burgers')
+group by c.name
+having count(distinct m.category)=2;
+select c.name
+from customers c, orders o, orderitems oi, menu m
+where c.customer_id=o.customer_id
+and o.order_id=oi.order_id
+and oi.item_id=m.item_id
+and m.category in ('pizza','burgers')
+group by c.name
+having count(distinct m.category)=2;
+delimiter //
+create trigger stop_negative_price
+for each row
+begin
+if new.price<0 
+signal sqlstate '45000'
+set message_text='negative price not allowed';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger stop_negative_price
+for each row
+begin
+if new.price<0 then
+signal sqlstate '45000'
+set message_text='negative price not allowed';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger stop_negative_price
+before insert on menu
+for each row
+begin
+if new.price<0 then
+signal sqlstate '45000'
+set message_text='negative price not allowed';
+end if;
+end //
+delimiter ;
+delimiter //
+create function checkcategory(iid int, cname varchar(30))
+begin
+select if(category=cname,'yes','no')
+into result
+from menu
+where item_id=iid;
+return result;
+end //
+delimiter ;
+delimiter //
+create function checkcategory(iid int, cname varchar(30))
+returns varchar(10)
+begin
+select if(category=cname,'yes','no')
+into result
+from menu
+where item_id=iid;
+return result;
+end //
+delimiter ;
+delimiter //
+create function checkcategory(iid int, cname varchar(30))
+returns varchar(10)
+begin
+declare result varchar(10);
+select if(category=cname,'yes','no')
+into result
+from menu
+where item_id=iid;
+return result;
+end //
+delimiter ;
+delimiter //
+create function checkcategory(iid int, cname varchar(30))
+returns varchar(10)
+deterministic
+begin
+declare result varchar(10);
+select if(category=cname,'yes','no')
+into result
+from menu
+where item_id=iid;
+return result;
+end //
+delimiter ;
+select checkcategory(1,'pizza');
