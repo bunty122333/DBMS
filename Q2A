@@ -1,0 +1,95 @@
+select user_id,sum(duration_in_minutes) as total_duration
+from workouts
+where date='2026-03-01';
+select user_id,sum(duration_in_minutes) as total_duration
+from workouts
+where date='2026-03-01'
+group by user_id;
+delimiter //
+create procedure get_workouts(in d1 date,in d2 date)
+begin
+select *
+from workouts
+where user_id=uid
+end //
+delimiter ;
+delimiter //
+create procedure get_workouts(in uid int,in d1 date,in d2 date)
+begin
+select *
+from workouts
+where user_id=uid
+end //
+delimiter ;
+delimiter //
+create procedure get_workouts(in uid int,in d1 date,in d2 date)
+begin
+select *
+from workouts
+where user_id=uid
+and date between d1 and d2;
+end //
+delimiter ;
+call get_workouts(1,'2026-03-01','2026-03-05');
+select u.name,count(w.workout_id) as total_workouts
+from users u, workouts w
+where u.user_id=w.user_id;
+select u.name,count(w.workout_id) as total_workouts
+from users u, workouts w
+where u.user_id=w.user_id
+group by u.name;
+create view workout_summary as
+select u.name,sum as total_duration
+from users u, workouts w
+where u.user_id=w.user_id
+group by u.name,w.workout_type;
+create view workout_summary as
+select u.name,w.workout_type,sum as total_duration
+from users u, workouts w
+where u.user_id=w.user_id
+group by u.name,w.workout_type;
+create view workout_summary as
+select u.name,w.workout_type,sum(w.duration_in_minutes) as total_duration
+from users u, workouts w
+where u.user_id=w.user_id
+group by u.name,w.workout_type;
+select * from workout_summary;
+select u.name
+from users u, goals g
+where u.goal_id=g.goal_id
+and g.goal_type='lose weight';
+select *
+from users
+where email like '%gmail%';
+delimiter //
+create trigger check_workout_time
+before insert on workouts
+for each row
+begin
+if new.end_time < new.start_time 
+set message_text='end time cannot be earlier than start time';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger check_workout_time
+before insert on workouts
+for each row
+begin
+if new.end_time < new.start_time then
+set message_text='end time cannot be earlier than start time';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger check_workout_time
+before insert on workouts
+for each row
+begin
+if new.end_time < new.start_time then
+signal sqlstate '45000'
+set message_text='end time cannot be earlier than start time';
+end if;
+end //
+delimiter ;
+select * from workouts;
