@@ -1,0 +1,94 @@
+delimiter //
+create function absentdays(present int,total int)
+returns int
+begin
+return total-present;
+end //
+delimiter;
+select absentdays(24,26);
+delimiter //
+create function absentdays(present int,total int)
+returns int
+determistic
+begin
+return total-present;
+end //
+delimiter;
+select absentdays(24,26);
+delimiter //
+create function absentdays(present int,total int)
+returns int
+deterministic
+begin
+return total-present;
+end //
+delimiter;
+select absentdays(24,26);
+select s.name
+from students s, marks m
+where s.student_id=m.student_id
+and c.class_name='se'
+and m.marks>20;
+select s.name
+from students s, marks m, classes c
+where s.student_id=m.student_id
+and s.class_id=c.class_id
+and c.class_name='se'
+and m.marks>20;
+select name
+from students
+where name like '_a%';
+select avg((present_days/total_days)*100)
+from attendance;
+select s.name
+from students s
+where s.student_id=m.student_id
+and m.marks<10;
+select s.name
+from students s, marks m
+where s.student_id=m.student_id
+and m.marks<10;
+select s.name,sum
+from students s, marks m
+where s.student_id=m.student_id
+and m.exam_name='midterm';
+select s.name,sum(m.marks)
+from students s, marks m
+where s.student_id=m.student_id
+and m.exam_name='midterm';
+select s.name,sum(m.marks)
+from students s, marks m
+where s.student_id=m.student_id
+and m.exam_name='midterm'
+group by s.name;
+delimiter //
+create procedure showstudents()
+begin
+declare sname varchar(20);
+declare cur cursor for select name from students;
+fetch cur into sname;
+select sname;
+fetch cur into sname;
+select sname;
+fetch cur into sname;
+select sname;
+close cur;
+end //
+delimiter ;
+call showstudents();
+delimiter //
+create procedure showstudents()
+begin
+declare sname varchar(20);
+declare cur cursor for select name from students;
+open cur;
+fetch cur into sname;
+select sname;
+fetch cur into sname;
+select sname;
+fetch cur into sname;
+select sname;
+close cur;
+end //
+delimiter ;
+call showstudents();
