@@ -1,0 +1,140 @@
+select m.category,
+sum(quantity*unit_price) as total_sales
+from menu m, orderitems o
+where m.item_id=o.item_id;
+select m.category,
+sum(o.quantity*o.unit_price) as total_sales
+from menu m, orderitems o
+where m.item_id=o.item_id;
+select m.category,
+sum(o.quantity*o.unit_price) as total_sales
+from menu m, orderitems o
+where m.item_id=o.item_id
+group by m.category;
+select o.order_id,c.name
+from orders o, customers c
+where o.customer_id=c.customer_id;
+select item_name
+from menu
+where item_id not in
+(select item_id from orderitems);
+select *
+from orders
+where date(order_date_time)=curdate();
+delimiter //
+create procedure orderdetails(in oid int)
+begin
+select *
+from orders
+where order_id=oid;
+end //
+delimiter ;
+delimiter //
+create procedure orderdetails(in oid int)
+begin
+select *
+from orderitems
+where order_id=oid;
+end //
+delimiter ;
+call orderdetails(1);
+create view top_items as
+select m.item_name,
+sum(o.quantity) as total_quantity
+from menu m, orderitems o
+where m.item_id=o.item_id
+group by m.item_name
+order by total_quantity;
+create view top_items as
+select m.item_name,
+sum(o.quantity) as total_quantity
+from menu m, orderitems o
+where m.item_id=o.item_id
+group by m.item_name
+order by total_quantity desc;
+create view top_items as
+select m.item_name,
+sum(o.quantity) as total_quantity
+from menu m, orderitems o
+where m.item_id=o.item_id
+group by m.item_name
+order by total_quantity desc
+limit 3;
+select * from top_items;
+delimiter //
+create procedure dailysales()
+begin
+select sum(quantity*unit_price)
+from orderitems
+group by order_id;
+declare continue handler for not found set done=1;
+open cur;
+read_loop: loop
+fetch cur into total;
+if done=1 then
+leave read_loop;
+end if;
+end loop;
+close cur;
+end //
+delimiter ;
+delimiter //
+create procedure dailysales()
+begin
+select sum(quantity*unit_price)
+from orderitems
+group by order_id;
+declare continue handler for not found set done=1;
+open cur;
+read_loop: loop
+fetch cur into total;
+if done=1 then
+leave read_loop;
+end if;
+select total;
+end loop;
+close cur;
+end //
+delimiter ;
+delimiter //
+create procedure dailysales()
+begin
+declare done int default 0;
+declare total int;
+select sum(quantity*unit_price)
+from orderitems
+group by order_id;
+declare continue handler for not found set done=1;
+open cur;
+read_loop: loop
+fetch cur into total;
+if done=1 then
+leave read_loop;
+end if;
+select total;
+end loop;
+close cur;
+end //
+delimiter ;
+delimiter //
+create procedure dailysales()
+begin
+declare done int default 0;
+declare total int;
+declare cur cursor for
+select sum(quantity*unit_price)
+from orderitems
+group by order_id;
+declare continue handler for not found set done=1;
+open cur;
+read_loop: loop
+fetch cur into total;
+if done=1 then
+leave read_loop;
+end if;
+select total;
+end loop;
+close cur;
+end //
+delimiter ;
+call dailysales();
