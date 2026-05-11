@@ -1,0 +1,81 @@
+select *
+from customers
+where name like '%an%';
+select *
+from customers
+where customer_id=1;
+select m.item_name,sum(oi.quantity) as total_sold
+from menu m, orderitems oi
+where m.item_id=oi.item_id;
+select m.item_name,sum(oi.quantity) as total_sold
+from menu m, orderitems oi
+where m.item_id=oi.item_id
+group by m.item_name;
+select avg(price) as avg_price
+from menu;
+select c.name,sum(oi.quantity*oi.unit_price) as total_amount
+from customers c, orders o
+where c.customer_id=o.customer_id
+group by c.name
+having sum(oi.quantity*oi.unit_price)>1000;
+select c.name,sum(oi.quantity*oi.unit_price) as total_amount
+from customers c, orders o
+where c.customer_id=o.customer_id
+and o.order_id=oi.order_i
+group by c.name
+having sum(oi.quantity*oi.unit_price)>1000;
+select c.name,sum(oi.quantity*oi.unit_price) as total_amount
+from customers c, orders o, orderitems oi
+where c.customer_id=o.customer_id
+and o.order_id=oi.order_i
+group by c.name
+having sum(oi.quantity*oi.unit_price)>1000;
+delimiter //
+create trigger backup_customer
+for each row
+begin
+insert into customer_backup
+values(old.customer_id,old.name,old.contact_number);
+end //
+delimiter ;
+delimiter //
+create trigger backup_customer
+before delete on customers
+for each row
+begin
+insert into customer_backup
+values(old.customer_id,old.name,old.contact_number);
+end //
+delimiter ;
+delimiter //
+create trigger backup_customer
+before delete on customers
+for each row
+begin
+insert into customer_backup
+values(old.customer_id,old.name,old.contact_number,now());
+end //
+delimiter ;
+delete from customers where customer_id=2;
+select * from customer_backup;
+delimiter //
+create procedure addmenu(
+in iid int,
+)
+begin
+insert into menu values(iid);
+end //
+delimiter ;
+delimiter //
+create procedure addmenu(
+in iid int,
+in iname varchar(30),
+in cat varchar(30),
+in pr int
+)
+begin
+insert into menu values(iid,iname,cat,pr);
+end //
+delimiter ;
+call addmenu(5,'noodles','chinese',180);
+select * from menu;
