@@ -1,0 +1,155 @@
+create database marketplace;
+use marketplace;
+create table categories(
+category_id int primary key,
+category_name varchar(30)
+);
+create table products(
+product_id int primary key,
+name varchar(30),
+description varchar(100),
+price int,
+category_id int,
+foreign key(category_id) references categories(category_id)
+);
+create table warehouses(
+warehouse_id int primary key,
+warehouse_name varchar(30),
+city varchar(30)
+);
+create table inventory(
+inventory_id int primary key,
+product_id int,
+warehouse_id int,
+quantity_in_stock int,
+last_stock_update date,
+foreign key(product_id) references products(product_id),
+foreign key(warehouse_id) references warehouses(warehouse_id)
+);
+create table orders(
+order_id int primary key,
+customer_id int,
+order_date date,
+shipping_address varchar(100),
+order_status varchar(30)
+);
+create table shipments(
+shipment_id int primary key,
+order_id int,
+shipping_carrier varchar(30),
+tracking_number varchar(30),
+shipment_date date,
+foreign key(order_id) references orders(order_id)
+);
+insert into categories values
+(1,'kitchen'),
+(2,'cooling'),
+(3,'cleaning');
+insert into products values
+(1,'mixer','electric mixer',2500,1),
+(2,'fridge','double door fridge',30000,2),
+(3,'vacuum cleaner','cleaning machine',8000,3),
+(4,'oven','microwave oven',12000,1);
+insert into warehouses values
+(1,'warehouse a','pune'),
+(2,'warehouse b','mumbai');
+insert into inventory values
+(1,1,1,5,'2026-05-01'),
+(2,2,1,20,'2026-05-01'),
+(3,3,2,8,'2026-05-01'),
+(4,4,2,15,'2026-05-01');
+insert into orders values
+(1,101,'2026-05-01','pune','pending'),
+(2,101,'2026-05-02','pune','shipped'),
+(3,102,'2026-05-03','mumbai','delivered');
+insert into shipments values
+(1,2,'bluedart','trk101','2026-05-03'),
+(2,3,'dtdc','trk102','2026-05-04');
+select c.category_name,count(p.product_id) 
+from categories c
+where c.category_id=p.category_id
+group by c.category_name;
+select c.category_name,count(p.product_id) as total_products
+from categories c
+where c.category_id=p.category_id
+group by c.category_name;
+select c.category_name,count(p.product_id) as total_products
+from categories c, products p
+where c.category_id=p.category_id
+group by c.category_name;
+delimiter //
+create procedure in cid int
+begin
+select *
+from orders
+where customer_id=cid;
+end //
+delimiter ;
+delimiter //
+create procedure customer_orders(in cid int)
+begin
+select *
+from orders
+where customer_id=cid;
+end //
+delimiter ;
+call customer_orders(101);
+select p.name,c.category_name
+from products p, categories c
+where p.category_id=c.category_id;
+create view stock as
+select p.name,sum(i.quantity_in_stock) as total_stock
+from products p, inventory i
+where p.product_id=i.product_id
+having sum(i.quantity_in_stock)<10;
+create view low_stock as
+select p.name,sum(i.quantity_in_stock) as total_stock
+from products p, inventory i
+where p.product_id=i.product_id
+having sum(i.quantity_in_stock)<10;
+create view low_stock as
+select p.name,sum(i.quantity_in_stock) as total_stock
+from products p, inventory i
+where p.product_id=i.product_id
+group by p.name
+having sum(i.quantity_in_stock)<10;
+select * from low_stock;
+select order_status,count(*) as total_orders
+from orders
+group by order_status;
+delimiter //
+create trigger stop_negative_stock
+before insert on inventory
+for each row
+begin
+signal sqlstate '45000'
+set message_text='negative stock not allowed';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger stop_negative_stock
+before insert on inventory
+for each row
+begin
+if new.quantity_in_stock<0 
+signal sqlstate '45000'
+set message_text='negative stock not allowed';
+end if;
+end //
+delimiter ;
+delimiter //
+create trigger stop_negative_stock
+before insert on inventory
+for each row
+begin
+if new.quantity_in_stock<0 then
+signal sqlstate '45000'
+set message_text='negative stock not allowed';
+end if;
+end //
+delimiter ;
+select * from inventory;
+select *
+from warehouses
+where city='pune';
